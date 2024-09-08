@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="1" author="vdavdov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="user"/>
+            </not>
+        </preConditions>
+        <createTable tableName="user">
+            <column name="id" type="SERIAL">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="username" type="VARCHAR(50)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(100)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="first_name" type="VARCHAR(50)"/>
+            <column name="last_name" type="VARCHAR(50)"/>
+            <column name="profile_picture" type="VARCHAR(255)"/>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <sql>
+            ALTER TABLE "user" ALTER COLUMN created_at SET DEFAULT CURRENT_TIMESTAMP;
+            ALTER TABLE "user" ALTER COLUMN updated_at SET DEFAULT CURRENT_TIMESTAMP;
+        </sql>
+    </changeSet>
+
+    <changeSet id="2" author="vdavdov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="post"/>
+            </not>
+        </preConditions>
+        <createTable tableName="post">
+            <column name="id" type="SERIAL">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="content" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <sql>
+            ALTER TABLE post ALTER COLUMN created_at SET DEFAULT CURRENT_TIMESTAMP;
+            ALTER TABLE post ALTER COLUMN updated_at SET DEFAULT CURRENT_TIMESTAMP;
+        </sql>
+
+        <addForeignKeyConstraint constraintName="fk_post_user"
+                                 baseTableName="post"
+                                 baseColumnNames="user_id"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="3" author="vdavdov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="comment"/>
+            </not>
+        </preConditions>
+        <createTable tableName="comment">
+            <column name="id" type="SERIAL">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="post_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="content" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <sql>
+            ALTER TABLE comment ALTER COLUMN created_at SET DEFAULT CURRENT_TIMESTAMP;
+            ALTER TABLE comment ALTER COLUMN updated_at SET DEFAULT CURRENT_TIMESTAMP;
+        </sql>
+
+        <addForeignKeyConstraint constraintName="fk_comment_post"
+                                 baseTableName="comment"
+                                 baseColumnNames="post_id"
+                                 referencedTableName="post"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+        <addForeignKeyConstraint constraintName="fk_comment_user"
+                                 baseTableName="comment"
+                                 baseColumnNames="user_id"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="4" author="vdavdov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="friendship"/>
+            </not>
+        </preConditions>
+        <createTable tableName="friendship">
+            <column name="id" type="SERIAL">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="friend_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <sql>
+            ALTER TABLE friendship ALTER COLUMN created_at SET DEFAULT CURRENT_TIMESTAMP;
+        </sql>
+
+        <addForeignKeyConstraint constraintName="fk_friendship_user"
+                                 baseTableName="friendship"
+                                 baseColumnNames="user_id"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+        <addForeignKeyConstraint constraintName="fk_friendship_friend"
+                                 baseTableName="friendship"
+                                 baseColumnNames="friend_id"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="5" author="vdavdov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="like"/>
+            </not>
+        </preConditions>
+        <createTable tableName="like">
+            <column name="id" type="SERIAL">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="post_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <sql>
+            ALTER TABLE "like" ALTER COLUMN created_at SET DEFAULT CURRENT_TIMESTAMP;
+        </sql>
+
+        <addForeignKeyConstraint constraintName="fk_like_post"
+                                 baseTableName="like"
+                                 baseColumnNames="post_id"
+                                 referencedTableName="post"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+        <addForeignKeyConstraint constraintName="fk_like_user"
+                                 baseTableName="like"
+                                 baseColumnNames="user_id"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="6" author="vdavdov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="message"/>
+            </not>
+        </preConditions>
+        <createTable tableName="message">
+            <column name="id" type="SERIAL">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="sender_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="receiver_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="content" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_read" type="BOOLEAN" defaultValue="false"/>
+        </createTable>
+
+        <sql>
+            ALTER TABLE message ALTER COLUMN created_at SET DEFAULT CURRENT_TIMESTAMP;
+        </sql>
+
+        <addForeignKeyConstraint constraintName="fk_message_sender"
+                                 baseTableName="message"
+                                 baseColumnNames="sender_id"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+        <addForeignKeyConstraint constraintName="fk_message_receiver"
+                                 baseTableName="message"
+                                 baseColumnNames="receiver_id"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="7" author="vdavdov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="message_attachment"/>
+            </not>
+        </preConditions>
+        <createTable tableName="message_attachment">
+            <column name="id" type="SERIAL">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="message_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="file_url" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="file_type" type="VARCHAR(50)"/>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <sql>
+            ALTER TABLE message_attachment ALTER COLUMN created_at SET DEFAULT CURRENT_TIMESTAMP;
+        </sql>
+
+        <addForeignKeyConstraint constraintName="fk_message_attachment_message"
+                                 baseTableName="message_attachment"
+                                 baseColumnNames="message_id"
+                                 referencedTableName="message"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>
