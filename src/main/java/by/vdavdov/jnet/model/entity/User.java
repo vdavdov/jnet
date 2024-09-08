@@ -27,7 +27,7 @@ public class User {
     @Column(name = "email", unique = true, nullable = false, length = 100)
     private String email;
 
-    @Column(name = "password", nullable = false, length = 255)
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Column(name = "first_name", length = 50)
@@ -36,9 +36,7 @@ public class User {
     @Column(name = "last_name", length = 50)
     private String lastName;
 
-
-//    private String profilePicture; todo
-
+    //    private String profilePicture; todo
 
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
